@@ -450,6 +450,72 @@ void zNPCBSandy::Reset()
     zNPCCommon::Reset();
 
     this->firstUpdate = 0x1;
+    this->bossFlags = 0x400;
+    *this->boundFlags = 0;
+
+    this->dustEddieEmitter = zParEmitterFind("PAREMIT_DUST_SWIRL");
+    this->shockwaveEmitter = zParEmitterFind("PAREMIT_SHOCKWAVE");
+
+    zSceneFindObject(xStrHash("SANDY_HEAD_BOULDER"));
+
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|radius", (F32*)&this->headBoulder, 0.1f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|x", (F32*)&this->headBoulder, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|y", (F32*)&this->headBoulder, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|z", (F32*)&this->headBoulder, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|x", &this->headBoulder->localCenter.x, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|y", &this->headBoulder->localCenter.y, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|z", &this->headBoulder->localCenter.z, -10.0f, 10.0f, 0, 0, 0);
+
+    zSceneFindObject(xStrHash("SO_SCOREBOARD"));
+    zSceneFindObject(xStrHash("SCOREBOARD_BUSTED"));
+    zSceneFindObject(xStrHash("SCOREBOARD_HAZARD"));
+    xSTFindAsset(xStrHash("pdome_scoreboard_shrapnel"), 0);
+    xSTFindAsset(xStrHash("pdome_scoreboard_secondary_shrapnel"), 0);
+    xSTFindAsset(xStrHash("pdome_scoreboard_tertiary_shrapnel"), 0);
+    xSTFindAsset(xStrHash("pdome_scaffolding_shrapnel"), 0);
+    zSceneFindObject(xStrHash("SO_LIGHTRIG01"));
+    zSceneFindObject(xStrHash("SO_LIGHTRIG010"));
+    zSceneFindObject(xStrHash("SO_LIGHTRIG0100"));
+    zSceneFindObject(xStrHash("SO_LIGHTRIG01000"));
+    zSceneFindObject(xStrHash("CSNMGR_ROUND1"));
+    zSceneFindObject(xStrHash("CSNMGR_ROUND2"));
+    zSceneFindObject(xStrHash("CSNMGR_ROUND3"));
+    xSTFindAsset(xStrHash("target"), 0);
+    xSTFindAsset(xStrHash("target_foot"), 0);
+    xSTFindAsset(xStrHash("CORNER_00"), 0);
+
+    xVec3Copy(&this->ringCorner[0], &endPnt);
+    xVec3Add(&this->ringEdgeCenter[0], &this->ringCorner[0], 0);
+    xVec3SMulBy(&this->ringEdgeCenter[0], 0.5f);
+    xVec3Sub(&this->ropeNormal[0], 0, &this->ringCorner[0]);
+    xVec3Normalize(&this->ropeNormal[0], &this->ropeNormal[0]);
+    xVec3Copy(&this->bouncePoint[0], &this->ringEdgeCenter[0]);
+    xVec3AddScaled(&this->bouncePoint[0], &this->ringEdgeCenter[0], 6.042f);
+    strcpy(objName, "ROPE_0_0");
+    
+
+    this->ropeObject[0][0] = (xEnt*)zSceneFindObject(xStrHash(objName));
+    this->ropeObject[0][0]->model->PipeFlags |= 4;
+
+    //strcmp
+    //strcpy
+    xStrHash(0);
+    zSceneFindObject(0);
+    xStrHash(0);
+    zSceneFindObject(0);
+    //strcpy
+    xStrHash(0);
+    zSceneFindObject(0);
+    xVec3Sub(0, 0, 0);
+    xVec3Length(0);
+    //zEntEvent(0, 0);
+    xStrHash(0);
+    //xJaw_FindData(0);
+    zNPCBSandy::InitFX();
+    //xPsyche::GoalSet(0, 0);
+    xVec3Init(0, 0, 0, 0);
+    zLightningAdd(0);
+    zLightningAdd(0);
 }
 
 void zNPCBSandy::ParseINI()
