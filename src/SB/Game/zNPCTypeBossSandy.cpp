@@ -316,14 +316,78 @@ void zNPCBSandy::Init(xEntAsset* asset)
     zNPCCommon::Init(asset);
     sSandyPtr = this;
 
-    round = 1;
-    firstTimeR1Csn = 1;
-    boundFlags = (U32*)xMemAlloc(gActiveHeap, 13 * sizeof(U32), 0x0);
-    boundList = (xEnt**)xMemAlloc(gActiveHeap, 13 * sizeof(xEnt*), 0x0);
+    this->round = 1;
+    this->firstTimeR1Csn = 1;
+    this->boundFlags = (U32*)xMemAlloc(gActiveHeap, 13 * sizeof(U32), 0x0);
+    this->boundList = (xEnt**)xMemAlloc(gActiveHeap, 13 * sizeof(xEnt*), 0x0);
 
-    for (i = 0; i < 13; i++)
+    this->laserShow.set_curve(&this->curveNode[0], 0);
+
+    this->laserShow.cfg.life_time = 0.5f;
+
+    this->laserShow.refresh_config();
+    this->laserShow.set_texture(xStrHash("lightning"));
+
+    for (i = 0; i < 30; i++)
     {
+        sNFSoundValue[i] = xStrHash(sNFSoundLabel[i]);
     }
+
+    this->iconVert[0].objVertex.x = 1.0f;
+    this->iconVert[0].objVertex.y = 0.0f;
+    this->iconVert[0].objVertex.z = 1.0f;
+    this->iconVert[1].objVertex.x = -1.0f;
+    this->iconVert[1].objVertex.y = 1.0f;
+    this->iconVert[1].objVertex.z = 1.0f;
+    this->iconVert[2].objVertex.x = 0.0f;
+    this->iconVert[2].objVertex.y = -1.0f;
+    this->iconVert[2].objVertex.z = -1.0f;
+    this->iconVert[3].objVertex.x = -1.0f;
+    this->iconVert[3].objVertex.y = 0.0f;
+    this->iconVert[3].objVertex.z = -1.0f;
+    this->iconVert[0].c.preLitColor.red = 0xff;
+    this->iconVert[0].c.preLitColor.green = 0xff;
+    this->iconVert[0].c.preLitColor.blue = 0xff;
+    this->iconVert[0].c.preLitColor.alpha = 0xff;
+    this->iconVert[1].c.preLitColor.red = 0xff;
+    this->iconVert[1].c.preLitColor.green = 0xff;
+    this->iconVert[1].c.preLitColor.blue = 0xff;
+    this->iconVert[1].c.preLitColor.alpha = 0xff;
+    this->iconVert[2].c.preLitColor.red = 0xff;
+    this->iconVert[2].c.preLitColor.green = 0xff;
+    this->iconVert[2].c.preLitColor.blue = 0xff;
+    this->iconVert[2].c.preLitColor.alpha = 0xff;
+    this->iconVert[3].c.preLitColor.red = 0xff;
+    this->iconVert[3].c.preLitColor.green = 0xff;
+    this->iconVert[3].c.preLitColor.blue = 0xff;
+    this->iconVert[3].c.preLitColor.alpha = 0xff;
+    this->iconVert[0].u = 0.0f;
+    this->iconVert[1].u = 1.0f;
+    this->iconVert[2].u = 0.0f;
+    this->iconVert[3].u = 1.0f;
+    this->iconVert[0].v = 0.0f;
+    this->iconVert[1].v = 0.0f;
+    this->iconVert[2].v = 1.0f;
+    this->iconVert[3].v = 1.0f;
+    this->wireLight[0] = 0;
+    this->wireLight[1] = 0;
+
+    xDebugAddTweak("NPC|zNPCBSandy|Newsfish", "Speak", &newsfish_cb, 0, 0);
+    xDebugAddSelectTweak("NPC|zNPCBSandy|NewsfishComment", &sCurrNFSound, 0, &sNFSoundValue[0], 0x1e, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|Shockwave|Do It", "Go", &shockwave_cb, 0, 0);
+
+    this->shockwaveGrowthRate = 20.0f;
+    this->shockwaveMaxRadius = 10.0f;
+
+    xDebugAddTweak("NPC|zNPCBSandy|Shockwave|GrowthRate", &this->shockwaveGrowthRate, 0.0f, 1000000000.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|Shockwave|MaxRadius", &this->shockwaveMaxRadius, 0.0f, 1000000000.0f, 0, 0, 0);
+
+    this->edropShockwaveTime = 2.25f;
+    this->edropTurnMinTime = 1.0f;
+
+    xDebugAddTweak("NPC|zNPCBSandy|ElbowDrop|ShockwaveTime", &this->edropShockwaveTime, 0.0f, 1000000000.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|ElbowDrop|TurnTime", &this->edropTurnMinTime, 0.0f, 1000000000.0f, 0, 0, 0);
+    
 }
 
 void zNPCBSandy::Setup()
