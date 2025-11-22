@@ -321,9 +321,26 @@ void zNPCBSandy::Init(xEntAsset* asset)
     this->boundFlags = (U32*)xMemAlloc(gActiveHeap, 13 * sizeof(U32), 0x0);
     this->boundList = (xEnt**)xMemAlloc(gActiveHeap, 13 * sizeof(xEnt*), 0x0);
 
-    this->laserShow.set_curve(&this->curveNode[0], 0);
 
+    this->curveNode[0].time = 0.0f;
+    this->curveNode[0].scale = 1.0f;
+
+    colorPicker = 255.0f;
+
+    RwRGBA x;
+    _col = &x;
+
+    this->curveNode[0].color.r = _col->red;
+    this->curveNode[0].color.g = _col->green;
+    this->curveNode[0].color.b = _col->blue;
+    this->curveNode[0].color.a = _col->alpha;
+
+    this->curveNode[1].color.a = 0xff;
+    this->curveNodeAlpha = 1.0f;
+    this->laserShow.set_curve(&this->curveNode[0], 0x6);
     this->laserShow.cfg.life_time = 0.5f;
+    this->laserShow.cfg.blend_src = 0x5;
+    this->laserShow.cfg.blend_dst = 0x2;
 
     this->laserShow.refresh_config();
     this->laserShow.set_texture(xStrHash("lightning"));
