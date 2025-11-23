@@ -7,6 +7,7 @@
 #include "xCamera.h"
 #include "xMath3.h"
 #include "xDebug.h"
+#include "xJaw.h"
 
 #include "zEnt.h"
 #include "zFX.h"
@@ -320,28 +321,15 @@ void zNPCBSandy::Init(xEntAsset* asset)
     this->firstTimeR1Csn = 1;
     this->boundFlags = (U32*)xMemAlloc(gActiveHeap, 13 * sizeof(U32), 0x0);
     this->boundList = (xEnt**)xMemAlloc(gActiveHeap, 13 * sizeof(xEnt*), 0x0);
-
-
     this->curveNode[0].time = 0.0f;
     this->curveNode[0].scale = 1.0f;
-
     colorPicker = 255.0f;
-
-    RwRGBA x;
-    _col = &x;
-
-    this->curveNode[0].color.r = _col->red;
-    this->curveNode[0].color.g = _col->green;
-    this->curveNode[0].color.b = _col->blue;
-    this->curveNode[0].color.a = _col->alpha;
-
     this->curveNode[1].color.a = 0xff;
     this->curveNodeAlpha = 1.0f;
     this->laserShow.set_curve(&this->curveNode[0], 0x6);
     this->laserShow.cfg.life_time = 0.5f;
     this->laserShow.cfg.blend_src = 0x5;
     this->laserShow.cfg.blend_dst = 0x2;
-
     this->laserShow.refresh_config();
     this->laserShow.set_texture(xStrHash("lightning"));
 
@@ -547,25 +535,39 @@ void zNPCBSandy::Reset()
     xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|y", &this->headBoulder->localCenter.y, -10.0f, 10.0f, 0, 0, 0);
     xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|z", &this->headBoulder->localCenter.z, -10.0f, 10.0f, 0, 0, 0);
 
-    zSceneFindObject(xStrHash("SO_SCOREBOARD"));
-    zSceneFindObject(xStrHash("SCOREBOARD_BUSTED"));
-    zSceneFindObject(xStrHash("SCOREBOARD_HAZARD"));
-    xSTFindAsset(xStrHash("pdome_scoreboard_shrapnel"), 0);
-    xSTFindAsset(xStrHash("pdome_scoreboard_secondary_shrapnel"), 0);
-    xSTFindAsset(xStrHash("pdome_scoreboard_tertiary_shrapnel"), 0);
-    xSTFindAsset(xStrHash("pdome_scaffolding_shrapnel"), 0);
-    zSceneFindObject(xStrHash("SO_LIGHTRIG01"));
-    zSceneFindObject(xStrHash("SO_LIGHTRIG010"));
-    zSceneFindObject(xStrHash("SO_LIGHTRIG0100"));
-    zSceneFindObject(xStrHash("SO_LIGHTRIG01000"));
-    zSceneFindObject(xStrHash("CSNMGR_ROUND1"));
-    zSceneFindObject(xStrHash("CSNMGR_ROUND2"));
-    zSceneFindObject(xStrHash("CSNMGR_ROUND3"));
-    xSTFindAsset(xStrHash("target"), 0);
-    xSTFindAsset(xStrHash("target_foot"), 0);
-    xSTFindAsset(xStrHash("CORNER_00"), 0);
+    this->hangingScoreboard = (xEnt*)zSceneFindObject(xStrHash("SO_SCOREBOARD"));
+    this->bustedScoreboard = (xEnt*)zSceneFindObject(xStrHash("SCOREBOARD_BUSTED"));
+    this->crashedScoreboard = (xEnt*)zSceneFindObject(xStrHash("SCOREBOARD_HAZARD"));
+    this->scoreboardShrap = (zShrapnelAsset*)xSTFindAsset(xStrHash("pdome_scoreboard_shrapnel"), 0);
+    this->sboardSecondShrap = (zShrapnelAsset*)xSTFindAsset(xStrHash("pdome_scoreboard_secondary_shrapnel"), 0);
+    this->sboardThirdShrap = (zShrapnelAsset*)xSTFindAsset(xStrHash("pdome_scoreboard_tertiary_shrapnel"), 0);
+    this->lightRigShrap = (zShrapnelAsset*)xSTFindAsset(xStrHash("pdome_scaffolding_shrapnel"), 0);
+    this->lightRig[0] = (xEnt*)zSceneFindObject(xStrHash("SO_LIGHTRIG01"));
+    this->lightRig[1] = (xEnt*)zSceneFindObject(xStrHash("SO_LIGHTRIG010"));
+    this->lightRig[2] = (xEnt*)zSceneFindObject(xStrHash("SO_LIGHTRIG0100"));
+    this->lightRig[3] = (xEnt*)zSceneFindObject(xStrHash("SO_LIGHTRIG01000"));
+    this->round1Csn = (zCutsceneMgr*)zSceneFindObject(xStrHash("CSNMGR_ROUND1"));
+    this->round2Csn = (zCutsceneMgr*)zSceneFindObject(xStrHash("CSNMGR_ROUND2"));
+    this->round3Csn = (zCutsceneMgr*)zSceneFindObject(xStrHash("CSNMGR_ROUND3"));
+    this->targetRaster = 0;
+    this->helmetRaster = 0;
+    this->feetRaster = 0;
 
-    xVec3Copy(&this->ringCorner[0], &endPnt);
+    RwRaster** x;
+
+    if (x = (RwRaster**)xSTFindAsset(xStrHash("target"), 0))
+    {
+        this->helmetRaster = *x;
+    }
+
+    if (x = (RwRaster**)xSTFindAsset(xStrHash("target_foot"), 0))
+    {
+        this->feetRaster = *x;
+    }
+
+    crashedScoreboard->chkby += 0xef; //check
+
+    xVec3Copy(&this->ringCorner[0], (xVec3*)xSTFindAsset(xStrHash("CORNER_00"), &size));
     xVec3Add(&this->ringEdgeCenter[0], &this->ringCorner[0], 0);
     xVec3SMulBy(&this->ringEdgeCenter[0], 0.5f);
     xVec3Sub(&this->ropeNormal[0], 0, &this->ringCorner[0]);
@@ -574,29 +576,57 @@ void zNPCBSandy::Reset()
     xVec3AddScaled(&this->bouncePoint[0], &this->ringEdgeCenter[0], 6.042f);
     strcpy(objName, "ROPE_0_0");
     
-
     this->ropeObject[0][0] = (xEnt*)zSceneFindObject(xStrHash(objName));
     this->ropeObject[0][0]->model->PipeFlags |= 4;
 
-    //strcmp
-    //strcpy
-    xStrHash(0);
-    zSceneFindObject(0);
-    xStrHash(0);
-    zSceneFindObject(0);
-    //strcpy
-    xStrHash(0);
-    zSceneFindObject(0);
-    xVec3Sub(0, 0, 0);
-    xVec3Length(0);
-    //zEntEvent(0, 0);
-    xStrHash(0);
-    //xJaw_FindData(0);
+    strcmp(this->ropeObject[0][0]->model->Anim->Table->StateList->Name, "Idle01");
+    strcpy(objName, "ROPE_0_LO");
+    this-> ropeObjectLo[0] = (xEnt*)zSceneFindObject(xStrHash(objName));
+    this->ropeSbDamaged = (xEnt*)zSceneFindObject(xStrHash("ROPE_4_LO_DAMAGED"));
+    strcpy(objName, "TURNBUCKLE_OBJ_00");
+    this->turnbuckle[0] = (xEnt*)zSceneFindObject(xStrHash(objName));
+    sRadiusOfRing = xVec3Length(&endPnt) * 0.125f + sRadiusOfRing;
+
+    sLeftLegSpring.bound->type = 0;
+    sRightLegSpring.bound->type = 0;
+    sLeftArmSpring.bound->type = 0;
+    sRightArmSpring.bound->type = 0;
+
+    zEntEvent(headBoulder, 0x25);
+
+    this->timeToNextBolt[0] = 0.0f;
+    this->jawData = xJaw_FindData(xStrHash("SpongebobPoseidome 44"));
+
     zNPCBSandy::InitFX();
-    //xPsyche::GoalSet(0, 0);
-    xVec3Init(0, 0, 0, 0);
-    zLightningAdd(0);
-    zLightningAdd(0);
+
+    if (this->psy_instinct)
+    {
+        this->psy_instinct->GoalSet(0x4e474231, 0);
+    }
+
+    nfFlags = 0;
+    xVec3Init(&endPnt, 0.0f, 0.0f, 0.0f);
+
+    this->sparks[4].start = &endPnt;
+    this->sparks[4].end = &endPnt;
+
+    if (!this->wireLight[0])
+    {
+        this->wireLight[0] = zLightningAdd(&this->sparks[4]);
+    }
+
+    this->sparks[4].start = 0;
+    this->sparks[4].end = 0;
+    this->sparks[5].start = 0;
+    this->sparks[5].end = 0;
+
+    if (!this->wireLight[1])
+    {
+        this->wireLight[1] = zLightningAdd(&this->sparks[5]);
+    }
+
+    this->sparks[5].start = 0;
+    this->sparks[5].end = 0;
 }
 
 void zNPCBSandy::ParseINI()
