@@ -568,12 +568,18 @@ void zNPCBSandy::Reset()
         this->feetRaster = *x;
     }
 
-    crashedScoreboard->chkby += 0xef; //check
+    crashedScoreboard->chkby += 0xef;
 
     xVec3Copy(&this->ringCorner[0], (xVec3*)xSTFindAsset(xStrHash("CORNER_00"), &size));
     xVec3Add(&this->ringEdgeCenter[0], &this->ringCorner[0], 0);
     xVec3SMulBy(&this->ringEdgeCenter[0], 0.5f);
     xVec3Sub(&this->ropeNormal[0], 0, &this->ringCorner[0]);
+
+    this->ropeNormal[0].y = this->ropeNormal[0].z;
+    this->ropeNormal[0].z = -this->ropeNormal[0].x;
+    this->ropeNormal[0].x = this->ropeNormal[0].y;
+    this->ropeNormal[0].y = 0.0f;
+
     xVec3Normalize(&this->ropeNormal[0], &this->ropeNormal[0]);
     xVec3Copy(&this->bouncePoint[0], &this->ringEdgeCenter[0]);
     xVec3AddScaled(&this->bouncePoint[0], &this->ringEdgeCenter[0], 6.042f);
