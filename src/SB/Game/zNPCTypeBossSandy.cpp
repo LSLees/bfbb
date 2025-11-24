@@ -524,13 +524,16 @@ void zNPCBSandy::Reset()
 
     this->dustEddieEmitter = zParEmitterFind("PAREMIT_DUST_SWIRL");
     this->shockwaveEmitter = zParEmitterFind("PAREMIT_SHOCKWAVE");
+    this->headBoulder = (xEntBoulder*)zSceneFindObject(xStrHash("SANDY_HEAD_BOULDER"));
+    this->headBoulder->bound.box.box.upper.x = 1.25f;
+    this->headBoulder->localCenter.x = 0.0f;
+    this->headBoulder->localCenter.y = 0.036f;
+    this->headBoulder->localCenter.z = 0.11f;
 
-    zSceneFindObject(xStrHash("SANDY_HEAD_BOULDER"));
-
-    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|radius", (F32*)&this->headBoulder, 0.1f, 10.0f, 0, 0, 0);
-    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|x", (F32*)&this->headBoulder, -10.0f, 10.0f, 0, 0, 0);
-    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|y", (F32*)&this->headBoulder, -10.0f, 10.0f, 0, 0, 0);
-    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|z", (F32*)&this->headBoulder, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|radius", &this->headBoulder->bound.sph.r, 0.1f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|x", &this->headBoulder->bound.sph.center.x, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|y", &this->headBoulder->bound.sph.center.y, -10.0f, 10.0f, 0, 0, 0);
+    xDebugAddTweak("NPC|zNPCBSandy|headBoulder|center|z", &this->headBoulder->bound.sph.center.z, -10.0f, 10.0f, 0, 0, 0);
     xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|x", &this->headBoulder->localCenter.x, -10.0f, 10.0f, 0, 0, 0);
     xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|y", &this->headBoulder->localCenter.y, -10.0f, 10.0f, 0, 0, 0);
     xDebugAddTweak("NPC|zNPCBSandy|headBoulder|localCener|z", &this->headBoulder->localCenter.z, -10.0f, 10.0f, 0, 0, 0);
