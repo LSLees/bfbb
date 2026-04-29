@@ -1461,3 +1461,39 @@ namespace bungee_state
         shared.flags = 0x3;
     }
 } // namespace bungee_state
+
+void bungee_state::insert_animations(xAnimTable& at)
+{
+    xAnimTableNewState(&at, "bungee_bottom_0", 0x10, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+    xAnimTableNewState(&at, "bungee_top_0", 0x10, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+    xAnimTableNewState(&at, "bungee_down_0", 0, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+    xAnimTableNewState(&at, "bungee_hit_0", 0x20, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+    xAnimTableNewState(&at, "bungee_mount_0", 0x20, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+    xAnimTableNewState(&at, "bungee_cycle_0", 0x10, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+    xAnimTableNewState(&at, "bungee_death_0", 0, 0, 1.0f, 0, 0, 0.0f, 0, 0, xAnimDefaultBeforeEnter, 0, 0);
+
+    if (0)
+    {
+        return;
+    }
+
+    if (0)
+    {
+        return;
+    }
+
+    xAnimTableNewTransition(&at, "", "", check_anim_start, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, 0.5f, 0);
+    xAnimTableNewTransition(&at, "bungee_cycle_0", "bungee_dive_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.dive.time, 0);
+    xAnimTableNewTransition(&at, "bungee_dive_0", "bungee_cycle_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.dive.anim_out_time, 0);
+    xAnimTableNewTransition(&at, "bungee_cycle_0", "bungee_top_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.top_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_top_0", "bungee_cycle_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.top_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_cycle_0", "bungee_bottom_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.bottom_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_bottom_0", "bungee_cycle_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.bottom_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_cycle_0", "bungee_hit_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.hit_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_hit_0", "bungee_dive_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.hit_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_hit_0", "bungee_top_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.hit_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_hit_0", "bungee_bottom_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.hit_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_hit_0", "bungee_cycle_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.hit_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_hit_0", "bungee_death_0", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, fixed.hit_anim_time, 0);
+    xAnimTableNewTransition(&at, "bungee_cycle_0", "Fall01", 0, 0, 0x10, 0, 0.0f, 0.0f, 0, 0, 0.5f, 0);
+}
